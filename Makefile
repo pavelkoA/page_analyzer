@@ -17,4 +17,8 @@ test:
 test-coverage:
 	poetry run pytest --cov=page_analyzer --cov-report xml
 
-all-check: test lint
+all-check:
+	test lint
+
+build:
+	./build.sh
