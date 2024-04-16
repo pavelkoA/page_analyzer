@@ -8,15 +8,28 @@ from page_analyzer.validator import get_url, is_url
 
 load_dotenv()
 DATABASE_URL = os.getenv('DATABASE_URL')
-conn = psycopg2.connect(DATABASE_URL)
+connect = psycopg2.connect(DATABASE_URL)
+
+
+app = Flask(__name__)
+app.secret_key = "MySuperSecretKey"
 
 
 def get_data_in_base_urls(connect, data):
     with connect.cursor() as cursor:
         cursor.execute(
-            f"""SELECT name
+            f"""SELECT *
                 FROM urls
                 WHERE name = '{data}'"""
+        )
+        return cursor.fetchone()
+
+def get_data_in_base_id(connect, id):
+    with connect.cursor() as cursor:
+        cursor.execute(
+            f"""SELECT *
+                FROM urls
+                WHERE id = '{id}'"""
         )
         return cursor.fetchone()
 
@@ -28,24 +41,19 @@ def write_data_to_base_urls(connect, data):
             cursor.execute(
                 "INSERT INTO urls (name) VALUES (%s)",
                 [data]
-            )
-        else:
-            raise
-        connect.commit()
-        return get_data_in_base_urls(connect, data)
-
-
-
-
-app = Flask(__name__)
-app.secret_key = "MySuperSecretKey"
+            )  
+            connect.commit()
+            return get_data_in_base_urls(connect, data)
+        return base_data
 
 
 @app.route("/")
 def get_index():
+    value = request.args.get("value", default="")
     messages = get_flashed_messages(with_categories=True)
     return render_template("index.html",
-                           messages=messages)
+                           messages=messages,
+                           value=value)
 
 
 @app.post("/urls")
@@ -53,10 +61,24 @@ def create_url():
     site = request.form.get("url")
     if not is_url(site):
         flash("Некорректный URL", "error")
-        return redirect(url_for("get_index"))
-    return "<h1>AAAAA</h1>"
+        return redirect(url_for("get_index", value=site))
+    data = get_data_in_base_urls(connect, get_url(site))
+    if data:
+        flash("Страница уже существует", "success")
+        id, site, created_at = data
+    else:
+        flash("Страница успешно добавлена", "success")
+        id, site, created_at = write_data_to_base_urls(connect, get_url(site))
+    return redirect(url_for("ulr_page", id=id), code=302)
+ 
+    
 
-
-# @app.route("/urls/<id>")
-# def get_ulr_page(id):
-#     return
+@app.route("/urls/<id>")
+def ulr_page(id):
+    id, site, created_at = get_data_in_base_id(connect, id)
+    messages = get_flashed_messages(with_categories=True)
+    return render_template("url_page.html",
+                           messages=messages,
+                           id=id,
+                           site=site,
+                           created_at=created_at.isoformat())
