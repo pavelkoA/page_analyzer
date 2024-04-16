@@ -1,7 +1,7 @@
 import os
 import psycopg2
 from dotenv import load_dotenv
-from flask import Flask, render_template, request, flash
+from flask import Flask, render_template, request, flash, redirect, get_flashed_messages, url_for
 
 from page_analyzer.validator import get_url, is_url
 
@@ -29,6 +29,8 @@ def write_data_to_base_urls(connect, data):
                 "INSERT INTO urls (name) VALUES (%s)",
                 [data]
             )
+        else:
+            raise 
         connect.commit()
         return get_data_in_base_urls(connect, data)
 
@@ -36,23 +38,24 @@ def write_data_to_base_urls(connect, data):
 
 
 app = Flask(__name__)
+app.secret_key = "MySuperSecretKey"
 
 
 @app.route("/")
 def get_index():
-    return render_template('index.html')
+    value = request.args.get["value", ""]
+    messages = get_flashed_messages(with_categories=True)
+    return render_template("index.html",
+                           messages=messages)
 
 
 @app.post("/urls")
 def create_url():
     site = request.form.get("url")
-    
-    if is_url(site):
-        print(write_data_to_base_urls(conn, get_url(site)))
-        return f'<h1>URAAAAA!!!!</h1>'
-    return render_template(
-        "index.html"
-    )
+    if not is_url(site):
+        flash("Некорректный URL", "error")
+        return redirect(url_for("get_index", value=site))
+    return "<h1>AAAAA</h1>"
 
 
 # @app.route("/urls/<id>")
