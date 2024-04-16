@@ -30,7 +30,7 @@ def write_data_to_base_urls(connect, data):
                 [data]
             )
         else:
-            raise 
+            raise
         connect.commit()
         return get_data_in_base_urls(connect, data)
 
@@ -43,7 +43,6 @@ app.secret_key = "MySuperSecretKey"
 
 @app.route("/")
 def get_index():
-    value = request.args.get["value", ""]
     messages = get_flashed_messages(with_categories=True)
     return render_template("index.html",
                            messages=messages)
@@ -54,10 +53,10 @@ def create_url():
     site = request.form.get("url")
     if not is_url(site):
         flash("Некорректный URL", "error")
-        return redirect(url_for("get_index", value=site))
+        return redirect(url_for("get_index"))
     return "<h1>AAAAA</h1>"
 
 
 # @app.route("/urls/<id>")
 # def get_ulr_page(id):
-#     return 
+#     return
