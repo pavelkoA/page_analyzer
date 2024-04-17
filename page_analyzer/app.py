@@ -47,6 +47,13 @@ def write_data_to_base_urls(connect, data):
         return base_data
 
 
+def get_all_urls_in_base(connect):
+    with connect.cursor() as cursor:
+        cursor.execute("""SELECT *
+                          FROM urls
+                          ORDER BY id DESC""")
+        return cursor.fetchall()
+
 @app.route("/")
 def get_index():
     value = request.args.get("value", default="")
@@ -56,7 +63,7 @@ def get_index():
                            value=value)
 
 
-@app.post("/urls")
+@app.route("/urls", methods=['POST'])
 def create_url():
     site = request.form.get("url")
     if not is_url(site):
@@ -65,11 +72,20 @@ def create_url():
     data = get_data_in_base_urls(connect, get_url(site))
     if data:
         flash("Страница уже существует", "success")
-        id, site, created_at = data
+        id, *other_data = data
     else:
         flash("Страница успешно добавлена", "success")
-        id, site, created_at = write_data_to_base_urls(connect, get_url(site))
+        id, *other_data = write_data_to_base_urls(connect, get_url(site))
     return redirect(url_for("ulr_page", id=id), code=302)
+
+
+@app.route("/urls", methods=["GET"])
+def get_urls():
+    urls = get_all_urls_in_base(connect)
+    return render_template(
+        "urls_page.html",
+        urls=urls
+    )
 
 
 
