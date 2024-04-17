@@ -7,12 +7,12 @@ from page_analyzer.validator import get_url, is_url
 
 
 load_dotenv()
-DATABASE_URL = os.getenv('DATABASE_URL')
+DATABASE_URL = os.getenv("DATABASE_URL")
 connect = psycopg2.connect(DATABASE_URL)
 
 
 app = Flask(__name__)
-app.secret_key = "MySuperSecretKey"
+app.secret_key = os.getenv("SECRET_KEY")
 
 
 def get_data_in_base_urls(connect, data):
@@ -41,7 +41,7 @@ def write_data_to_base_urls(connect, data):
             cursor.execute(
                 "INSERT INTO urls (name) VALUES (%s)",
                 [data]
-            )  
+            )
             connect.commit()
             return get_data_in_base_urls(connect, data)
         return base_data
@@ -70,8 +70,8 @@ def create_url():
         flash("Страница успешно добавлена", "success")
         id, site, created_at = write_data_to_base_urls(connect, get_url(site))
     return redirect(url_for("ulr_page", id=id), code=302)
- 
-    
+
+
 
 @app.route("/urls/<id>")
 def ulr_page(id):

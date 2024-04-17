@@ -30,13 +30,25 @@
 
         <main class="flex-grow-1">
             <div class="container-lg mt-3">
-                <h1>Сайт: {{ site }}</h1>
+                <h1>Сайты</h1>
                 <div class="table-responsive">
                     <table class="table table-bordered table-hover text-nowrap" data-test="url">
+                        <thead>
+                            <th>
+                                <tr>ID</tr>
+                                <tr>Name</tr>
+                                <tr>Последняя проверка</tr>
+                                <tr>Код ответа</tr>
+                            </th>
+                        </thead>
                         <tbody>
                             <tr>
-                                <td>ID</td>
                                 <td>{{ id }}</td>
+                                <td>
+                                    <a href="/urls/{{ id }}">{{ site }}</a>
+                                </td>
+                                <td>{{ check_date }}</td>
+                                <td>{{ response_code }}</td>
                             </tr>
                             <tr>
                                 <td>Имя</td>
