@@ -58,9 +58,11 @@ def get_urls():
 @app.route("/urls/<id>")
 def ulr_page(id):
     id, site, created_at = get_url_from_base_urls_by_id(id)
+    checks = [{"id": id, "created_at": created_at.isoformat()}]
     messages = get_flashed_messages(with_categories=True)
     return render_template("url_page.html",
                            messages=messages,
                            id=id,
                            site=site,
-                           created_at=created_at.isoformat())
+                           created_at=created_at.isoformat(),
+                           checks=checks)

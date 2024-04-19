@@ -1,5 +1,5 @@
 drop table if exists urls cascade;
-drop table if exists url_check cascade;
+drop table if exists url_checks cascade;
 
 CREATE TABLE urls (
 	id bigint PRIMARY KEY GENERATED ALWAYS AS IDENTITY,
@@ -8,12 +8,12 @@ CREATE TABLE urls (
 );
 
 
-create table url_check (
+create table url_checks (
 	id bigint PRIMARY KEY GENERATED ALWAYS AS IDENTITY,
-	site_id bigint REFERENCES urls (id)
+	url_id bigint REFERENCES urls (id)
 		on delete cascade
 		on update set null,
-	code_answer integer,
+	status_code integer,
 	h1 varchar(255),
 	title varchar(255),
 	description text,

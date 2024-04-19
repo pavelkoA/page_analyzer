@@ -26,9 +26,9 @@
     </header>
 
     {% if messages %}
-            {% for category, message in messages %}
+        {% for category, message in messages %}
             <div class="alert alert-danger" role="alert">{{ message }}</div>
-            {% endfor %}
+        {% endfor %}
     {% endif %}
 
     {% block content %}{% endblock %}
