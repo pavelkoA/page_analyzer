@@ -10,6 +10,7 @@ def validator(url):
         errors.append(("Слишком длинный URL", "error"))
     return errors
 
+
 def get_url(url):
     parse = urlparse(url)
     return parse.scheme + "://" + parse.hostname
