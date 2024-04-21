@@ -11,7 +11,9 @@ from page_analyzer.validator import get_url, validator
 from page_analyzer.db_utils import (get_url_from_base_urls,
                                     get_all_urls_from_base_ulrs,
                                     get_url_from_base_urls_by_id,
-                                    write_data_to_base_urls)
+                                    write_data_to_base_urls,
+                                    get_checks_from_url_checks,
+                                    write_new_check_from_url_checks)
 
 
 app = Flask(__name__)
@@ -39,10 +41,10 @@ def create_url():
     data = get_url_from_base_urls(url)
     if data:
         flash("Страница уже существует", "success")
-        id, *oher_data = data
+        id = data.id
     else:
         flash("Страница успешно добавлена", "success")
-        id, *oher_data = write_data_to_base_urls(url)
+        id = write_data_to_base_urls(url).id
     return redirect(url_for("ulr_page", id=id), code=302)
 
 
@@ -57,12 +59,21 @@ def get_urls():
 
 @app.route("/urls/<id>")
 def ulr_page(id):
-    id, site, created_at = get_url_from_base_urls_by_id(id)
-    checks = [{"id": id, "created_at": created_at.isoformat()}]
+    url_data = get_url_from_base_urls_by_id(id)
+    checks = get_checks_from_url_checks(id)
     messages = get_flashed_messages(with_categories=True)
     return render_template("url_page.html",
                            messages=messages,
-                           id=id,
-                           site=site,
-                           created_at=created_at.isoformat(),
+                           url_data=url_data,
+                           checks=checks)
+
+
+@app.post("/urls/<id>/checks")
+def checks_url(id):
+    url_data = get_url_from_base_urls_by_id(id)
+    write_new_check_from_url_checks(id, 200, "Hexlet",
+                                    "title", "description")
+    checks = get_checks_from_url_checks(id)
+    return render_template("url_page.html",
+                           url_data=url_data,
                            checks=checks)
