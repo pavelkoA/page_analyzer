@@ -3,6 +3,8 @@ import psycopg2
 from psycopg2.extras import NamedTupleCursor
 from dotenv import load_dotenv
 
+from collections import namedtuple
+
 
 load_dotenv()
 DATABASE_URL = os.getenv("DATABASE_URL")
