@@ -8,7 +8,7 @@ from flask import (Flask,
                    url_for)
 
 from page_analyzer.validator import get_url, validator
-from page_analyzer.http_utils import check_url
+from page_analyzer.http_utils import check_url, url_parse
 from page_analyzer.db_utils import (read_url_by_name,
                                     read_url_by_id,
                                     read_checks,
@@ -39,8 +39,8 @@ def create_url():
         for error in errors:
             flash(*error)
         return redirect(url_for("get_index", value=site))
-    data_id = read_url_by_name(url).id
-    if data_id:
+    data = read_url_by_name(url)
+    if data:
         flash("Страница уже существует", "success")
     else:
         flash("Страница успешно добавлена", "success")
@@ -74,7 +74,8 @@ def checks_url(id):
     url = read_url_by_id(id)
     try:
         status_code = check_url(url.name)
-        write_url_checks(id, status_code, "", "", "")
+        h1, title, dedscription = url_parse(url.name)
+        write_url_checks(id, status_code, h1, title, dedscription)
     except Exception:
         flash("Произошла ошибка при проверке", "danger")
     return redirect(url_for("ulr_page", id=id), code=302)

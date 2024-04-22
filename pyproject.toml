@@ -17,6 +17,8 @@ psycopg2-binary = "^2.9.9"
 validators = "^0.28.0"
 requests = "^2.31.0"
 bs4 = "^0.0.2"
+lxml = "^5.2.1"
+fake-useragent = "^1.5.1"
 
 
 [build-system]
