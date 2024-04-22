@@ -45,7 +45,7 @@ def create_url():
     else:
         flash("Страница успешно добавлена", "success")
         write_url(url)
-        data_id = read_url_by_name(url).id
+    data_id = read_url_by_name(url).id
     return redirect(url_for("ulr_page", id=data_id), code=302)
 
 

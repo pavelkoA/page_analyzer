@@ -14,7 +14,7 @@ def read_url_by_name(url):
             cursor.execute(
                 f"""SELECT *
                     FROM urls
-                    WHERE name = '{url}'"""
+                    WHERE name = %s""", [url]
             )
             data = cursor.fetchone()
     connect.close()
@@ -27,7 +27,7 @@ def read_url_by_id(id):
             cursor.execute(
                 f"""SELECT *
                     FROM urls
-                    WHERE id = '{id}'"""
+                    WHERE id = %s""", [id]
             )
             data = cursor.fetchone()
     connect.close()
@@ -39,8 +39,8 @@ def read_checks(id):
         with connect.cursor(cursor_factory=NamedTupleCursor) as cursor:
             cursor.execute(f"""SELECT *
                                FROM url_checks
-                               WHERE url_id = {id}
-                               ORDER BY id DESC""")
+                               WHERE url_id = %s
+                               ORDER BY id DESC""", [id])
             data = cursor.fetchall()
     connect.close()
     return data
@@ -49,18 +49,18 @@ def read_checks(id):
 def read_urls_and_last_checks():
     with psycopg2.connect(DATABASE_URL) as connect:
         with connect.cursor(cursor_factory=NamedTupleCursor) as cursor:
-            cursor.execute("""select
-                                urls.id as id,
-                                urls.name as name,
-                                url_checks.status_code as status_code,
-                                url_checks.created_at as created_at
-                              from urls
-                              left join url_checks
-                              on urls.id = url_checks.url_id
-                              and url_checks.id = (select max(id)
-                                    from url_checks
-                                    where urls.id = url_checks.url_id)
-                              order by urls.id desc;""")
+            cursor.execute("""SELECT
+                                urls.id AS id,
+                                urls.name AS name,
+                                url_checks.status_code AS status_code,
+                                url_checks.created_at AS created_at
+                              FROM urls
+                              LEFT JOIN url_checks
+                              ON urls.id = url_checks.url_id
+                              AND url_checks.id = (SELECT max(id)
+                                    FROM url_checks
+                                    WHERE urls.id = url_checks.url_id)
+                              ORDER BY urls.id DESC;""")
             data = cursor.fetchall()
     connect.close()
     return data
