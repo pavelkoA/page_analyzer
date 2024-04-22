@@ -1,10 +1,19 @@
 <!doctype html>
 {% extends "layout.html" %}
 
+{% block messages %}
+    {% if messages %}
+        {% for category, message in messages %}
+            <div class="alert alert-{{ category }}" role="alert">{{ message }}</div>
+        {% endfor %}
+    {% endif %}
+{% endblock %}
+
+
 {% block content %}
 <main class="flex-grow-1">
     <div class="container-lg mt-3">
-        <h1>Сайт: {{ site }}</h1>
+        <h1>Сайт: {{ url_data['name'] }}</h1>
         <div class="table-responsive">
             <table class="table table-bordered table-hover text-nowrap" data-test="url">
                 <tbody>

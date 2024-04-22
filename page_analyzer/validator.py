@@ -5,9 +5,9 @@ from urllib.parse import urlparse
 def validator(url):
     errors = []
     if not bool(url_validate(url)):
-        errors.append(("Некорректный URL", "error"))
+        errors.append(("Некорректный URL", "danger"))
     if len(url) > 255:
-        errors.append(("Слишком длинный URL", "error"))
+        errors.append(("Слишком длинный URL", "danger"))
     return errors
 
 

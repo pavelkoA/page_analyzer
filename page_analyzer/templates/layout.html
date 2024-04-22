@@ -24,12 +24,14 @@
             </div>
         </nav>
     </header>
+    {% block messages %}
+        {% if messages %}
+            {% for category, message in messages %}
+                <div class="alert alert-danger" role="alert">{{ message }}</div>
+            {% endfor %}
+        {% endif %}
+    {% endblock %}
 
-    {% if messages %}
-        {% for category, message in messages %}
-            <div class="alert alert-danger" role="alert">{{ message }}</div>
-        {% endfor %}
-    {% endif %}
 
     {% block content %}{% endblock %}
 

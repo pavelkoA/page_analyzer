@@ -1,0 +1,3 @@
+#!/usr/bin/env bash
+
+make install && psql -a -d postgresql://postgres:153426@localhost:5432/postgres -f database.sql

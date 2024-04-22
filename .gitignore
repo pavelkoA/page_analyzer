@@ -42,3 +42,4 @@ venv.bak/
 test.py
 .coverage
 coverage.xml
+mybuild.sh

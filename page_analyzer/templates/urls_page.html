@@ -11,6 +11,8 @@
                     <tr>
                         <th>ID</th>
                         <th>Name</th>
+                        <th>Последняя проверка</th>
+                        <th>Код ответа</th>
                     </tr>
                 </thead>
                 <tbody>
@@ -20,6 +22,16 @@
                         <td>
                             <a href="/urls/{{ url['id'] }}">{{ url['name'] }}</a>
                         </td>
+                        {% if url['created_at'] %}
+                        <td>{{ url['created_at'] }}</td>
+                        {% else %}
+                            <td></td>
+                        {% endif %}
+                        {% if url['status_code'] %}
+                            <td>{{ url['status_code'] }}</td>
+                        {% else %}
+                            <td></td>
+                        {% endif %}
                     </tr>
                     {% endfor %}
                 </tbody>
