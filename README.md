@@ -16,7 +16,6 @@
 - [Технологии](#технологии)
 - [Установка пакета](#установка-пакета)
 - [Ссылка на render.com](#ссылка-render.com)
-- [Сравнение файлов](#сравнение-файлов)
 
 
 ## Технологии
@@ -37,6 +36,6 @@
 python3 -m pip install --user git+https://github.com/pavelkoA/python-project-83.git
 ```
 
-## Ссыдка на render.com
+## Ссылка на render.com
 
 [Демонстрационная версия приложения](https://python-project-83-ygm2.onrender.com)
