@@ -38,7 +38,10 @@ def create_url():
     if errors:
         for error in errors:
             flash(*error)
-        return redirect(url_for("get_index", value=site)), 422
+        messages = get_flashed_messages(with_categories=True)
+        return render_template("index.html",
+                               messages=messages,
+                               value=site), 422
     data = read_url_by_name(url)
     if data:
         flash("Страница уже существует", "success")
@@ -46,7 +49,7 @@ def create_url():
         flash("Страница успешно добавлена", "success")
         write_url(url)
     data_id = read_url_by_name(url).id
-    return redirect(url_for("ulr_page", id=data_id)), 302
+    return redirect(url_for("ulr_page", id=data_id))
 
 
 @app.get("/urls")

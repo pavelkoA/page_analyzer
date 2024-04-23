@@ -12,9 +12,9 @@ def read_url_by_name(url):
     with psycopg2.connect(DATABASE_URL) as connect:
         with connect.cursor(cursor_factory=NamedTupleCursor) as cursor:
             cursor.execute(
-                f"""SELECT *
-                    FROM urls
-                    WHERE name = %s""", [url]
+                """SELECT *
+                   FROM urls
+                   WHERE name = %s""", [url]
             )
             data = cursor.fetchone()
     connect.close()
@@ -25,9 +25,9 @@ def read_url_by_id(id):
     with psycopg2.connect(DATABASE_URL) as connect:
         with connect.cursor(cursor_factory=NamedTupleCursor) as cursor:
             cursor.execute(
-                f"""SELECT *
-                    FROM urls
-                    WHERE id = %s""", [id]
+                """SELECT *
+                   FROM urls
+                   WHERE id = %s""", [id]
             )
             data = cursor.fetchone()
     connect.close()
@@ -37,10 +37,11 @@ def read_url_by_id(id):
 def read_checks(id):
     with psycopg2.connect(DATABASE_URL) as connect:
         with connect.cursor(cursor_factory=NamedTupleCursor) as cursor:
-            cursor.execute(f"""SELECT *
-                               FROM url_checks
-                               WHERE url_id = %s
-                               ORDER BY id DESC""", [id])
+            cursor.execute(
+                """SELECT *
+                   FROM url_checks
+                   WHERE url_id = %s
+                   ORDER BY id DESC""", [id])
             data = cursor.fetchall()
     connect.close()
     return data
