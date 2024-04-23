@@ -20,4 +20,4 @@ def url_parse(url):
     title = soup.find("head").find("title").get_text()
     description = soup.find("meta",
                             {"name": "description"}).get("content")
-    return h1, title, description
+    return {"h1": h1, "title": title, "description": description}

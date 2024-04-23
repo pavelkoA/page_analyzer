@@ -13,9 +13,10 @@ def read_url_by_name(url):
     query = """SELECT *
                FROM urls
                WHERE name = %s"""
+    data = [url]
     with psycopg2.connect(DATABASE_URL) as connect:
         with connect.cursor(cursor_factory=NamedTupleCursor) as cursor:
-            cursor.execute(query, [url])
+            cursor.execute(query, data)
             data = cursor.fetchone()
     connect.close()
     return data
@@ -25,9 +26,10 @@ def read_url_by_id(id):
     query = """SELECT *
                FROM urls
                WHERE id = %s"""
+    data = [id]
     with psycopg2.connect(DATABASE_URL) as connect:
         with connect.cursor(cursor_factory=NamedTupleCursor) as cursor:
-            cursor.execute(query, [id])
+            cursor.execute(query, data)
             data = cursor.fetchone()
     connect.close()
     return data
@@ -38,9 +40,10 @@ def read_checks(id):
                FROM url_checks
                WHERE url_id = %s
                ORDER BY id DESC"""
+    data = [id]
     with psycopg2.connect(DATABASE_URL) as connect:
         with connect.cursor(cursor_factory=NamedTupleCursor) as cursor:
-            cursor.execute(query, [id])
+            cursor.execute(query, data)
             data = cursor.fetchall()
     connect.close()
     return data
@@ -67,29 +70,25 @@ def read_urls_and_last_checks():
     return data
 
 
-def write_url_checks(url_id,
-                     status_code,
-                     h1,
-                     title,
-                     description):
+def write_url_checks(url):
     query = """INSERT INTO url_checks
                (url_id, status_code, h1, title, description)
                VALUES (%s, %s, %s, %s, %s)"""
+    data = [url.get("url_id", ""),
+            url.get("status_code", ""),
+            url.get("h1", ""),
+            url.get("title", ""),
+            url.get("description", "")]
     with psycopg2.connect(DATABASE_URL) as connect:
         with connect.cursor() as cursor:
-            cursor.execute(query, [url_id,
-                                   status_code,
-                                   h1,
-                                   title,
-                                   description])
+            cursor.execute(query, data)
     connect.close()
 
 
 def write_url(url):
+    query = "INSERT INTO urls (name) VALUES (%s)"
+    data = [url]
     with psycopg2.connect(DATABASE_URL) as connect:
         with connect.cursor() as cursor:
-            cursor.execute(
-                "INSERT INTO urls (name) VALUES (%s)",
-                [url]
-            )
+            cursor.execute(query, data)
     connect.close()

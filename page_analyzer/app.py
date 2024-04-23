@@ -33,8 +33,7 @@ def get_index():
 @app.post("/urls")
 def create_url():
     site = request.form.get("url")
-    url = get_url(site)
-    errors = validator(url)
+    errors = validator(site)
     if errors:
         for error in errors:
             flash(*error)
@@ -42,6 +41,7 @@ def create_url():
         return render_template("index.html",
                                messages=messages,
                                value=site), 422
+    url = get_url(site)
     data = read_url_by_name(url)
     if data:
         flash("Страница уже существует", "success")
@@ -76,9 +76,10 @@ def ulr_page(id):
 def checks_url(id):
     url = read_url_by_id(id)
     try:
-        status_code = check_url(url.name)
-        h1, title, dedscription = url_parse(url.name)
-        write_url_checks(id, status_code, h1, title, dedscription)
+        url_data = url_parse(url.name)
+        url_data["status_code"] = check_url(url.name)
+        url_data["url_id"] = id
+        write_url_checks(url_data)
         flash("Страница успешно проверена", "success")
     except Exception:
         flash("Произошла ошибка при проверке", "danger")
