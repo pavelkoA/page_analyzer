@@ -38,7 +38,7 @@ def create_url():
     if errors:
         for error in errors:
             flash(*error)
-        return redirect(url_for("get_index", value=site), code=422)
+        return redirect(url_for("get_index", value=site)), 422
     data = read_url_by_name(url)
     if data:
         flash("Страница уже существует", "success")
@@ -46,7 +46,7 @@ def create_url():
         flash("Страница успешно добавлена", "success")
         write_url(url)
     data_id = read_url_by_name(url).id
-    return redirect(url_for("ulr_page", id=data_id), code=302)
+    return redirect(url_for("ulr_page", id=data_id)), 302
 
 
 @app.get("/urls")
@@ -72,7 +72,6 @@ def ulr_page(id):
 @app.post("/urls/<id>/checks")
 def checks_url(id):
     url = read_url_by_id(id)
-    answer_code = 302
     try:
         status_code = check_url(url.name)
         h1, title, dedscription = url_parse(url.name)
@@ -80,5 +79,4 @@ def checks_url(id):
         flash("Страница успешно проверена", "success")
     except Exception:
         flash("Произошла ошибка при проверке", "danger")
-        answer_code = 422
-    return redirect(url_for("ulr_page", id=id), code=answer_code)
+    return redirect(url_for("ulr_page", id=id))
