@@ -78,7 +78,7 @@ def checks_url(id):
         h1, title, dedscription = url_parse(url.name)
         write_url_checks(id, status_code, h1, title, dedscription)
         flash("Страница успешно проверена", "success")
-        answer_code = 422
     except Exception:
         flash("Произошла ошибка при проверке", "danger")
+        answer_code = 422
     return redirect(url_for("ulr_page", id=id), code=answer_code)
