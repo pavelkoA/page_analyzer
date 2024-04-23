@@ -9,24 +9,14 @@ load_dotenv()
 DATABASE_URL = os.getenv("DATABASE_URL")
 
 
-def read_url_by_name(url):
-    query = """SELECT *
-               FROM urls
-               WHERE name = %s"""
+def read_url(url):
+    query_arg = "id"
+    if isinstance(url, str):
+        query_arg = "name"
+    query = f"""SELECT *
+                FROM urls
+                WHERE {query_arg} = %s"""
     data = [url]
-    with psycopg2.connect(DATABASE_URL) as connect:
-        with connect.cursor(cursor_factory=NamedTupleCursor) as cursor:
-            cursor.execute(query, data)
-            data = cursor.fetchone()
-    connect.close()
-    return data
-
-
-def read_url_by_id(id):
-    query = """SELECT *
-               FROM urls
-               WHERE id = %s"""
-    data = [id]
     with psycopg2.connect(DATABASE_URL) as connect:
         with connect.cursor(cursor_factory=NamedTupleCursor) as cursor:
             cursor.execute(query, data)

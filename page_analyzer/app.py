@@ -9,8 +9,7 @@ from flask import (Flask,
 
 from page_analyzer.validator import get_url, validator
 from page_analyzer.http_utils import check_url, url_parse
-from page_analyzer.db_utils import (read_url_by_name,
-                                    read_url_by_id,
+from page_analyzer.db_utils import (read_url,
                                     read_checks,
                                     read_urls_and_last_checks,
                                     write_url,
@@ -42,13 +41,13 @@ def create_url():
                                messages=messages,
                                value=site), 422
     url = get_url(site)
-    data = read_url_by_name(url)
+    data = read_url(url)
     if data:
         flash("Страница уже существует", "success")
     else:
         flash("Страница успешно добавлена", "success")
         write_url(url)
-    data_id = read_url_by_name(url).id
+    data_id = read_url(url).id
     return redirect(url_for("ulr_page", id=data_id))
 
 
@@ -61,9 +60,9 @@ def get_urls():
     )
 
 
-@app.route("/urls/<id>")
+@app.route("/urls/<int:id>")
 def ulr_page(id):
-    url_data = read_url_by_id(id)
+    url_data = read_url(id)
     checks = read_checks(id)
     messages = get_flashed_messages(with_categories=True)
     return render_template("url_page.html",
@@ -72,9 +71,9 @@ def ulr_page(id):
                            checks=checks)
 
 
-@app.post("/urls/<id>/checks")
+@app.post("/urls/<int:id>/checks")
 def checks_url(id):
-    url = read_url_by_id(id)
+    url = read_url(id)
     try:
         url_data = url_parse(url.name)
         url_data["status_code"] = check_url(url.name)
