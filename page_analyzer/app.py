@@ -38,7 +38,7 @@ def create_url():
     if errors:
         for error in errors:
             flash(*error)
-        return redirect(url_for("get_index", value=site))
+        return redirect(url_for("get_index", value=site), code=422)
     data = read_url_by_name(url)
     if data:
         flash("Страница уже существует", "success")
@@ -76,6 +76,7 @@ def checks_url(id):
         status_code = check_url(url.name)
         h1, title, dedscription = url_parse(url.name)
         write_url_checks(id, status_code, h1, title, dedscription)
+        return redirect(url_for("ulr_page", id=id), code=422)
     except Exception:
         flash("Произошла ошибка при проверке", "danger")
     return redirect(url_for("ulr_page", id=id), code=302)
