@@ -72,11 +72,13 @@ def ulr_page(id):
 @app.post("/urls/<id>/checks")
 def checks_url(id):
     url = read_url_by_id(id)
+    answer_code = 302
     try:
         status_code = check_url(url.name)
         h1, title, dedscription = url_parse(url.name)
         write_url_checks(id, status_code, h1, title, dedscription)
-        return redirect(url_for("ulr_page", id=id), code=422)
+        flash("Страница успешно проверена", "success")
+        answer_code = 422
     except Exception:
         flash("Произошла ошибка при проверке", "danger")
-    return redirect(url_for("ulr_page", id=id), code=302)
+    return redirect(url_for("ulr_page", id=id), code=answer_code)
