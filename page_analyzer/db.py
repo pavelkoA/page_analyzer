@@ -9,7 +9,7 @@ load_dotenv()
 DATABASE_URL = os.getenv("DATABASE_URL")
 
 
-def read_url(url):
+def get_url(url):
     query_arg = "id"
     if isinstance(url, str):
         query_arg = "name"

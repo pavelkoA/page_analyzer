@@ -1,13 +1,5 @@
 <!doctype html>
-{% extends "layout.html" %}
-
-{% block messages %}
-    {% if messages %}
-        {% for category, message in messages %}
-            <div class="alert alert-{{ category }}" role="alert">{{ message }}</div>
-        {% endfor %}
-    {% endif %}
-{% endblock %}
+{% extends "base.html" %}
 
 
 {% block content %}

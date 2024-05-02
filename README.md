@@ -20,7 +20,7 @@
 
 ## Технологии
 - [Python3](https://www.python.org/)
-- [Flask] (https://flask.palletsprojects.com/)
+- [Flask](https://flask.palletsprojects.com/)
 - [gunicorn](https://gunicorn.org/)
 - [validators](https://validators.readthedocs.io/)
 - [requests](https://requests.readthedocs.io/)
