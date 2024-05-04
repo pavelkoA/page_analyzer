@@ -41,14 +41,15 @@ jobs:
                 pip install poetry
                 make build
                 npx playwright install --with-deps
+            
+            - name: Run project
+              run: make start
 
             - name: Check lint
               run: make lint
 
             - name: Test
-              run: |
-                poetry run flask app page_analyzer:app run &
-                make test
+              run: make test
 
 
         
