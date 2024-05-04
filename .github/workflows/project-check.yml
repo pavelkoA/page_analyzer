@@ -40,7 +40,7 @@ jobs:
                 python3 -m pip install --upgrade pip
                 pip install poetry
                 make build
-                poetry add playwright install-deps
+                npx playwright install --with-deps
 
             - name: Check lint
               run: make lint
