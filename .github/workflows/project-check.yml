@@ -44,5 +44,10 @@ jobs:
             - name: Check lint
               run: make lint
 
+            - name: Test
+              run: |
+                make start
+                poetry test
+
 
         
