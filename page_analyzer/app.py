@@ -7,7 +7,7 @@ from flask import (Flask,
                    url_for)
 
 from page_analyzer.validator import get_url, validator
-from page_analyzer.http_utils import check_url, url_parse
+from page_analyzer.http_utils import url_parse
 from page_analyzer import db
 
 
@@ -65,7 +65,6 @@ def check_url(id):
     url = db.get_url(id)
     try:
         url_data = url_parse(url.name)
-        url_data["status_code"] = check_url(url.name)
         url_data["url_id"] = id
         db.write_url_checks(url_data)
         flash("Страница успешно проверена", "success")
