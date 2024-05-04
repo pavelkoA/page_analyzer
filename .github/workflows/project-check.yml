@@ -40,14 +40,15 @@ jobs:
                 python3 -m pip install --upgrade pip
                 pip install poetry
                 make build
+                pip 
 
             - name: Check lint
               run: make lint
 
             - name: Test
               run: |
-                make start
-                poetry test
+                poetry run flask app page_analyzer:app run &
+                make test
 
 
         
