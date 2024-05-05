@@ -2,43 +2,55 @@ import os
 import psycopg2
 from psycopg2.extras import NamedTupleCursor
 from dotenv import load_dotenv
+from functools import wraps
 
 
 load_dotenv()
 DATABASE_URL = os.getenv("DATABASE_URL")
 
 
-def get_url(url):
+def connect_db(database_url):
+    def wrap(func):
+        @wraps(func)
+        def wrapper(func_argument=None):
+            with psycopg2.connect(database_url) as connect:
+                with connect.cursor(cursor_factory=NamedTupleCursor) as cursor:
+                    if func_argument:
+                        return_cursor = func(cursor, func_argument)
+                    else:
+                        return_cursor = func(cursor)
+            connect.close()
+            return return_cursor
+        return wrapper
+    return wrap
+
+
+@connect_db(DATABASE_URL)
+def get_url(cursor, url):
     query_arg = "id"
     if isinstance(url, str):
         query_arg = "name"
     query = f"""SELECT *
                 FROM urls
                 WHERE {query_arg} = %s"""
-    data = [url]
-    with psycopg2.connect(DATABASE_URL) as connect:
-        with connect.cursor(cursor_factory=NamedTupleCursor) as cursor:
-            cursor.execute(query, data)
-            data = cursor.fetchone()
-    connect.close()
-    return data
+    query_data = [url]
+    cursor.execute(query, query_data)
+    return cursor.fetchone()
 
 
-def read_checks(id):
+@connect_db(DATABASE_URL)
+def read_checks(cursor, id):
     query = """SELECT *
                FROM url_checks
                WHERE url_id = %s
                ORDER BY id DESC"""
-    data = [id]
-    with psycopg2.connect(DATABASE_URL) as connect:
-        with connect.cursor(cursor_factory=NamedTupleCursor) as cursor:
-            cursor.execute(query, data)
-            data = cursor.fetchall()
-    connect.close()
-    return data
+    query_data = [id]
+    cursor.execute(query, query_data)
+    return cursor.fetchall()
 
 
-def read_urls_and_last_checks():
+@connect_db(DATABASE_URL)
+def read_urls_and_last_checks(cursor):
     query = """SELECT
                 urls.id AS id,
                 urls.name AS name,
@@ -51,33 +63,25 @@ def read_urls_and_last_checks():
                 FROM url_checks
                 WHERE urls.id = url_checks.url_id)
                ORDER BY urls.id DESC;"""
-    with psycopg2.connect(DATABASE_URL) as connect:
-        with connect.cursor(cursor_factory=NamedTupleCursor) as cursor:
-            cursor.execute(query)
-            data = cursor.fetchall()
-    connect.close()
-    return data
+    cursor.execute(query)
+    return cursor.fetchall()
 
 
-def write_url_checks(url):
+@connect_db(DATABASE_URL)
+def write_url_checks(cursor, url):
     query = """INSERT INTO url_checks
                (url_id, status_code, h1, title, description)
                VALUES (%s, %s, %s, %s, %s)"""
-    data = [url.get("url_id", ""),
-            url.get("status_code", ""),
-            url.get("h1", ""),
-            url.get("title", ""),
-            url.get("description", "")]
-    with psycopg2.connect(DATABASE_URL) as connect:
-        with connect.cursor() as cursor:
-            cursor.execute(query, data)
-    connect.close()
+    query_data = [url.get("url_id", ""),
+                  url.get("status_code", ""),
+                  url.get("h1", ""),
+                  url.get("title", ""),
+                  url.get("description", "")]
+    cursor.execute(query, query_data)
 
 
-def write_url(url):
+@connect_db(DATABASE_URL)
+def write_url(cursor, url):
     query = "INSERT INTO urls (name) VALUES (%s)"
-    data = [url]
-    with psycopg2.connect(DATABASE_URL) as connect:
-        with connect.cursor() as cursor:
-            cursor.execute(query, data)
-    connect.close()
+    query_data = [url]
+    cursor.execute(query, query_data)

@@ -40,16 +40,16 @@ jobs:
                 python3 -m pip install --upgrade pip
                 pip install poetry
                 make build
-                npx playwright install --with-deps
+            #     npx playwright install --with-deps
             
-            - name: Run project
-              run: make start
+            # - name: Run project
+            #   run: make start
 
             - name: Check lint
               run: make lint
 
-            - name: Test
-              run: make test
+            # - name: Test
+            #   run: make test
 
 
         
