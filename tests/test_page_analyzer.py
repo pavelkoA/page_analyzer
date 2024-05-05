@@ -8,10 +8,10 @@ test_data = [("https://ru.hexlet.ru", 1),
 
 
 def add_url_analyzer(page, url):
-    page.goto("http://127.0.0.1:8000")
+    page.goto("http://127.0.0.1:8001")
     page.locator("input[name='url']").fill(url)
     page.locator("input[type='submit']").click()
-    page.goto("http://127.0.0.1:8000/urls")
+    page.goto("http://127.0.0.1:8001/urls")
     return page.locator("tbody").locator("tr")
 
 
