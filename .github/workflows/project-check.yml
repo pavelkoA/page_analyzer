@@ -12,22 +12,6 @@ jobs:
             matrix:
                 python-varsion: ["3.10", "3.x"]
 
-        services:
-            postgres:
-                image: postgres:16
-                ports:
-                    - "5432:5432"
-                env:
-                    POSTGRES_DB: database
-                    POSTGRES_USER: pyuser
-                    POSTGRES_PASSWORD: pypasswd
-
-        env:
-            POSTGRES_DB: database
-            POSTGRES_USER: pyuser
-            POSTGRES_PASSWORD: pypasswd
-            DATABASE_URL: "postgresql://pyuser:pypasswd@localhost:5432/database"
-
         steps:
             - uses: actions/checkout@v3
             - name: Install python ${{ matrix.python-varsion }}
@@ -40,16 +24,7 @@ jobs:
                 python3 -m pip install --upgrade pip
                 pip install poetry
                 make build
-            #     npx playwright install --with-deps
-            
-            # - name: Run project
-            #   run: make start
 
             - name: Check lint
               run: make lint
-
-            # - name: Test
-            #   run: make test
-
-
         
