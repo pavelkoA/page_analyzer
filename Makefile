@@ -1,4 +1,4 @@
-PORT ?= 8001
+PORT ?= 8000
 dev:
 	poetry run flask --app page_analyzer:app run --debug
 
