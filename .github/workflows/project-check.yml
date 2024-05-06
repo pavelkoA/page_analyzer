@@ -11,16 +11,13 @@ jobs:
 
         steps:
             - uses: actions/checkout@v3
-            - name: Install python ${{ matrix.python-varsion }}
+            - name: Install python
               uses: actions/setup-python@v4
-              with:
-                python-version: ${{ matrix.python-varsion }}
 
             - name: Install project
               run: |
                 python3 -m pip install --upgrade pip
                 pip install poetry
-                make build
 
             - name: Check lint
               run: make lint
