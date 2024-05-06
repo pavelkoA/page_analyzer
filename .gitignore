@@ -43,3 +43,4 @@ test.py
 .coverage
 coverage.xml
 mybuild.sh
+tests/
