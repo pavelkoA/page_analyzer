@@ -8,9 +8,6 @@ jobs:
 
     test:
         runs-on: ubuntu-latest
-        strategy:
-            matrix:
-                python-varsion: ["3.10", "3.x"]
 
         steps:
             - uses: actions/checkout@v3
@@ -27,4 +24,3 @@ jobs:
 
             - name: Check lint
               run: make lint
-        
