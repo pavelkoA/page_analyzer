@@ -33,7 +33,7 @@ def get_url(cursor, url):
     query = f"""SELECT *
                 FROM urls
                 WHERE {query_arg} = %s"""
-    query_data = [url]
+    query_data = (url,)
     cursor.execute(query, query_data)
     return cursor.fetchone()
 
@@ -44,7 +44,7 @@ def read_checks(cursor, id):
                FROM url_checks
                WHERE url_id = %s
                ORDER BY id DESC"""
-    query_data = [id]
+    query_data = (id,)
     cursor.execute(query, query_data)
     return cursor.fetchall()
 
@@ -68,7 +68,7 @@ def read_urls_and_last_checks(cursor):
 
 
 @connect_db(DATABASE_URL)
-def write_url_checks(cursor, url):
+def insert_url_checks(cursor, url):
     query = """INSERT INTO url_checks
                (url_id, status_code, h1, title, description)
                VALUES (%s, %s, %s, %s, %s)"""
@@ -81,7 +81,8 @@ def write_url_checks(cursor, url):
 
 
 @connect_db(DATABASE_URL)
-def write_url(cursor, url):
-    query = "INSERT INTO urls (name) VALUES (%s)"
-    query_data = [url]
+def insert_url(cursor, url):
+    query = "INSERT INTO urls (name) VALUES (%s) RETURNING id"
+    query_data = (url,)
     cursor.execute(query, query_data)
+    return cursor.fetchone().id

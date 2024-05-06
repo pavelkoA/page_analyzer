@@ -7,7 +7,7 @@ ua = UserAgent()
 headers = {'User-Agent': ua.random}
 
 
-def url_parse(url):
+def html_parse(url):
     response = requests.get(url=url, headers=headers, timeout=5)
     response.raise_for_status()
     status_code = response.status_code
