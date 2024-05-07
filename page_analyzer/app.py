@@ -17,9 +17,7 @@ app.secret_key = os.getenv("SECRET_KEY")
 
 @app.route("/")
 def index():
-    value = request.args.get("value", default="")
-    return render_template("index.html",
-                           value=value)
+    return render_template("index.html")
 
 
 @app.post("/urls")
