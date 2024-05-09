@@ -1,15 +1,7 @@
-import requests
 from bs4 import BeautifulSoup
-from fake_useragent import UserAgent
 
 
-ua = UserAgent()
-headers = {'User-Agent': ua.random}
-
-
-def url_parse(url):
-    response = requests.get(url=url, headers=headers, timeout=5)
-    response.raise_for_status()
+def html_parse(response):
     status_code = response.status_code
     soup = BeautifulSoup(response.text, "lxml")
     h1 = soup.find("h1").get_text()

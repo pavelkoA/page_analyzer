@@ -1,4 +1,6 @@
 import os
+import requests
+from fake_useragent import UserAgent
 from flask import (Flask,
                    render_template,
                    request,
@@ -6,13 +8,18 @@ from flask import (Flask,
                    redirect,
                    url_for)
 
-from page_analyzer.validator import get_url, validator
-from page_analyzer.http_utils import url_parse
+from page_analyzer.utilits import normilize_url, validatord
+from page_analyzer.html_parser import html_parse
 from page_analyzer import db
+from dotenv import load_dotenv
 
 
 app = Flask(__name__)
 app.secret_key = os.getenv("SECRET_KEY")
+
+
+load_dotenv()
+DATABASE_URL = os.getenv("DATABASE_URL")
 
 
 @app.route("/")
@@ -22,27 +29,31 @@ def index():
 
 @app.post("/urls")
 def create_url():
-    site = request.form.get("url")
-    errors = validator(site)
+    connect_db = db.connect_db(DATABASE_URL)
+    url = request.form.get("url")
+    errors = validatord(url)
     if errors:
         for error in errors:
             flash(*error)
         return render_template("index.html",
-                               value=site), 422
-    url = get_url(site)
-    data = db.get_url(url)
+                               value=url), 422
+    normile_url = normilize_url(url)
+    data = db.get_url(connect_db, normile_url)
     if data:
         flash("Страница уже существует", "success")
     else:
         flash("Страница успешно добавлена", "success")
-        db.write_url(url)
-    data_id = db.get_url(url).id
+        db.write_url(connect_db, normile_url)
+    data_id = db.get_url(connect_db, normile_url).id
+    db.close(connect_db)
     return redirect(url_for("show_url_page", id=data_id))
 
 
 @app.get("/urls")
 def get_urls():
-    urls = db.read_urls_and_last_checks()
+    connect_db = db.connect_db(DATABASE_URL)
+    urls = db.read_urls_and_last_checks(connect_db)
+    db.close(connect_db)
     return render_template(
         "urls/list.html",
         urls=urls
@@ -51,8 +62,10 @@ def get_urls():
 
 @app.route("/urls/<int:id>")
 def show_url_page(id):
-    url_data = db.get_url(id)
-    checks = db.read_checks(id)
+    connect_db = db.connect_db(DATABASE_URL)
+    url_data = db.get_url(connect_db, id)
+    checks = db.read_checks(connect_db, id)
+    db.close(connect_db)
     return render_template("urls/detail.html",
                            url_data=url_data,
                            checks=checks)
@@ -60,12 +73,22 @@ def show_url_page(id):
 
 @app.post("/urls/<int:id>/checks")
 def check_url(id):
-    url = db.get_url(id)
+    connect_db = db.connect_db(DATABASE_URL)
+    url = db.get_url(connect_db, id).name
+    ua = UserAgent()
+    headers = {'User-Agent': ua.random}
     try:
-        url_data = url_parse(url.name)
+        response = requests.get(url=url,
+                                headers=headers,
+                                timeout=5)
+        response.raise_for_status()
+        url_data = html_parse(response)
         url_data["url_id"] = id
-        db.write_url_checks(url_data)
+        db.write_url_checks(connect_db, url_data)
         flash("Страница успешно проверена", "success")
-    except Exception:
+
+    except Exception as ex:
+        print(ex)
         flash("Произошла ошибка при проверке", "danger")
+    db.close(connect_db)
     return redirect(url_for("show_url_page", id=id))
