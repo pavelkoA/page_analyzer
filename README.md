@@ -42,7 +42,7 @@ git clone git+https://github.com/pavelkoA/python-project-83.git
 cd python-project-83
 ```
 
-3. Переиеннуем файл .env.example в .env
+3. Переиеннуем файл .env.example в .env  
    В DATABASE_URL необходимо вставить данные для подключения к базе банных:
    - USER_DB - пользователь базы данных  
    - PASSWORD_DB - пароль для подключения к базе данных  
