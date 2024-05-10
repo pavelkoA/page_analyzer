@@ -14,11 +14,11 @@ from page_analyzer import db
 from dotenv import load_dotenv
 
 
+load_dotenv()
 app = Flask(__name__)
 app.secret_key = os.getenv("SECRET_KEY")
 
 
-load_dotenv()
 DATABASE_URL = os.getenv("DATABASE_URL")
 
 
