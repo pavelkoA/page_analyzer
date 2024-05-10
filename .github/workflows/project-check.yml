@@ -22,6 +22,11 @@ jobs:
               POSTGRES_PORT: 5432
             ports:
               - 5432:5432
+            options: >-
+              --health-cmd pg_isready
+              --health-interval 10s
+              --health-timeout 5s
+              --health-retries 5
 
         steps:
             - uses: actions/checkout@v3
@@ -29,15 +34,20 @@ jobs:
               uses: actions/setup-python@v4
               with:
                 python-version: ${{ matrix.python-varsion }}
+            
+            - name: Install PostgreSQL client
+              run: |
+                apt-get update
+                apt-get install --yes postgresql-client
+              env:
+                DATABASE_URL: postgres://postgres_user:posrgres_password@localhost:5432/postgres_db
+                SECRET_KEY: SuperPuperMegaSecretKey
 
             - name: Install project
               run: |
                 python3 -m pip install --upgrade pip
                 pip install poetry
                 make build
-              env:
-                DATABASE_URL: postgres://postgres_user:postgres_password@localhost:5432/postgres_db
-                SECRET_KEY: SuperPuperMegaSecretKey
 
             - name: Check lint
               run: make lint
