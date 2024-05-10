@@ -36,7 +36,7 @@ jobs:
                 pip install poetry
                 make build
               env:
-                DATABASE_URL: postgres://postgres_user:postgres_password@postgres:5432/postgres_db
+                DATABASE_URL: postgres://postgres_user:postgres_password@localhost:5432/postgres_db
                 SECRET_KEY: SuperPuperMegaSecretKey
 
             - name: Check lint
