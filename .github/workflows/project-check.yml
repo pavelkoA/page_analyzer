@@ -13,20 +13,20 @@ jobs:
                 python-varsion: ["3.10", "3.x"]
 
         services:
-          postgres:
-            image: postgres:latest
-            env:
-              POSTGRES_DB: postgres_db
-              POSTGRES_PASSWORD: posrgres_password
-              POSTGRES_USER: postgres_user
-              POSTGRES_PORT: 5432
-            ports:
-              - 5432:5432
-            options: >-
-              --health-cmd pg_isready
-              --health-interval 10s
-              --health-timeout 5s
-              --health-retries 5
+            postgres:
+                image: postgres:16
+                ports:
+                    - "5432:5432"
+                env:
+                    POSTGRES_DB: database
+                    POSTGRES_USER: pyuser
+                    POSTGRES_PASSWORD: pypasswd
+
+        env:
+            POSTGRES_DB: database
+            POSTGRES_USER: pyuser
+            POSTGRES_PASSWORD: pypasswd
+            DATABASE_URL: "postgresql://pyuser:pypasswd@localhost:5432/database"
 
         steps:
             - uses: actions/checkout@v3
@@ -34,14 +34,6 @@ jobs:
               uses: actions/setup-python@v4
               with:
                 python-version: ${{ matrix.python-varsion }}
-            
-            - name: Install PostgreSQL client
-              run: |
-                apt-get update
-                apt-get install --yes postgresql-client
-              env:
-                DATABASE_URL: postgres://postgres_user:posrgres_password@localhost:5432/postgres_db
-                SECRET_KEY: SuperPuperMegaSecretKey
 
             - name: Install project
               run: |
