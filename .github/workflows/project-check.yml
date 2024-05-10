@@ -23,6 +23,7 @@ jobs:
               run: |
                 python3 -m pip install --upgrade pip
                 pip install poetry
+                make install
 
             - name: Check lint
               run: make lint
