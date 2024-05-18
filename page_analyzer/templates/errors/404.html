@@ -1,0 +1,16 @@
+<!DOCTYPE html>
+
+{% extends "base.html" %}
+
+{% block content %}
+<div class="container-lg mt-3">
+    <h1></h1>
+
+<div class="col-12 col-md-10 col-lg-8 mx-auto border rounded-3 border-grey p-5">
+{% if error %}
+    <h1 class="display-4">{{ error.code }} {{ error.name }}</h1>
+    <p class="lead">{{ error.description }}</p>
+    <p><a href="{{ url_for('index') }}">Go to home page</a>
+{% endif %}
+</div>
+{% endblock %}

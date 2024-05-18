@@ -7,10 +7,6 @@ def connect_db(database_url):
     return psycopg2.connect(database_url)
 
 
-def close(connect):
-    return connect.close()
-
-
 def commit():
     def wrap(func):
         @wraps(func)
@@ -27,9 +23,7 @@ def get_url(connect, url):
         query_arg = "id"
         if isinstance(url, str):
             query_arg = "name"
-        query = f"""SELECT *
-                    FROM urls
-                    WHERE {query_arg} = %s"""
+        query = f"SELECT * FROM urls WHERE {query_arg} = %s"
         query_data = [url]
         cursor.execute(query, query_data)
         return cursor.fetchone()
@@ -37,9 +31,7 @@ def get_url(connect, url):
 
 def read_checks(connect, id):
     with connect.cursor(cursor_factory=NamedTupleCursor) as cursor:
-        query = """SELECT *
-                   FROM url_checks
-                   WHERE url_id = %s
+        query = """SELECT * FROM url_checks WHERE url_id = %s
                    ORDER BY id DESC"""
         query_data = [id]
         cursor.execute(query, query_data)
@@ -48,18 +40,14 @@ def read_checks(connect, id):
 
 def read_urls_and_last_checks(connect):
     with connect.cursor(cursor_factory=NamedTupleCursor) as cursor:
-        query = """SELECT
-                    urls.id AS id,
-                    urls.name AS name,
+        query = """SELECT urls.id AS id, urls.name AS name,
                     url_checks.status_code AS status_code,
                     url_checks.created_at AS created_at
-                FROM urls
-                LEFT JOIN url_checks
-                ON urls.id = url_checks.url_id
-                AND url_checks.id = (SELECT max(id)
-                    FROM url_checks
+                    FROM urls
+                    LEFT JOIN url_checks ON urls.id = url_checks.url_id
+                    AND url_checks.id = (SELECT max(id) FROM url_checks
                     WHERE urls.id = url_checks.url_id)
-                ORDER BY urls.id DESC;"""
+                    ORDER BY urls.id DESC;"""
         cursor.execute(query)
         return cursor.fetchall()
 
