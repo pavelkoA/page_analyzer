@@ -5,11 +5,11 @@ from urllib.parse import urlparse
 def validate(input_url):
     errors = []
     if not input_url:
-        errors.append(("URL обязателен для заполнения", "danger"))
+        return "URL обязателен для заполнения", "danger"
     if not bool(url_validate(input_url)):
-        errors.append(("Некорректный URL", "danger"))
+        return "Некорректный URL", "danger"
     if len(input_url) > 255:
-        errors.append(("Слишком длинный URL", "danger"))
+        return "Слишком длинный URL", "danger"
     return errors
 
 

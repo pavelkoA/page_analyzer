@@ -7,7 +7,6 @@ from flask import (Flask,
                    flash,
                    redirect,
                    url_for)
-from werkzeug.exceptions import HTTPException
 
 from page_analyzer.utilits import normalize_url, validate
 from page_analyzer.html_parser import html_parse
@@ -17,10 +16,8 @@ from dotenv import load_dotenv
 
 load_dotenv()
 app = Flask(__name__)
-app.secret_key = os.getenv("SECRET_KEY")
-
-
-DATABASE_URL = os.getenv("DATABASE_URL")
+app.config["SECRET_KEY"] = os.getenv("SECRET_KEY")
+app.config["DATABASE_URL"] = os.getenv("DATABASE_URL")
 
 
 @app.route("/")
@@ -30,12 +27,11 @@ def index():
 
 @app.post("/urls")
 def create_url():
-    with db.connect_db(DATABASE_URL) as connect_db:
+    with db.connect_db(app.config["DATABASE_URL"]) as connect_db:
         input_url = request.form.get("url")
-        errors = validate(input_url)
-        if errors:
-            for error in errors:
-                flash(*error)
+        validation_error = validate(input_url)
+        if validation_error:
+            flash(validation_error, 'danger')
             return render_template("index.html",
                                    value=input_url), 422
         normile_url = normalize_url(input_url)
@@ -51,7 +47,7 @@ def create_url():
 
 @app.get("/urls")
 def get_urls():
-    with db.connect_db(DATABASE_URL) as connect_db:
+    with db.connect_db(app.config["DATABASE_URL"]) as connect_db:
         urls = db.read_urls_and_last_checks(connect_db)
         return render_template(
             "urls/list.html",
@@ -61,7 +57,7 @@ def get_urls():
 
 @app.route("/urls/<int:id>")
 def show_url_page(id):
-    with db.connect_db(DATABASE_URL) as connect_db:
+    with db.connect_db(app.config["DATABASE_URL"]) as connect_db:
         url_data = db.get_url(connect_db, id)
         checks = db.read_checks(connect_db, id)
         return render_template("urls/detail.html",
@@ -71,7 +67,7 @@ def show_url_page(id):
 
 @app.post("/urls/<int:id>/checks")
 def check_url(id):
-    with db.connect_db(DATABASE_URL) as connect_db:
+    with db.connect_db(app.config["DATABASE_URL"]) as connect_db:
         url = db.get_url(connect_db, id).name
         ua = UserAgent()
         headers = {'User-Agent': ua.random}
@@ -91,7 +87,7 @@ def check_url(id):
         return redirect(url_for("show_url_page", id=id))
 
 
-@app.errorhandler(HTTPException)
+@app.errorhandler(404)
 def page_not_found(e):
     return render_template("errors/404.html",
                            error=e), e.code
